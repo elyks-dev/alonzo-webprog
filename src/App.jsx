@@ -16,7 +16,6 @@ function App() {
         </p>
 
          <p>
-          Repository:{" "}
           <a href="https://github.com/elyks-dev/alonzo-webprog" target="_blank" rel="noopener noreferrer">
             https://github.com/elyks-dev/alonzo-webprog
           </a>
