@@ -4,7 +4,6 @@ const HomePage = () => {
   return (
     <div className="flex w-full flex-col gap-6">
 
-      {/* Hero Section */}
       <section className="border-y-2 border-zinc-900 bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-2 lg:items-center">
           <div>
@@ -34,7 +33,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
       <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-400">
@@ -61,7 +59,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Featured Posts Section */}
       <section className="border-y-2 border-zinc-900 bg-white px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-end justify-between">

@@ -5,7 +5,6 @@ const AboutPage = () => {
   return (
     <div className="flex w-full flex-col gap-6">
 
-      {/* Hero */}
       <section className="border-y-2 border-zinc-900 bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-2 lg:items-center">
           <div className="overflow-hidden rounded-3xl border-2 border-zinc-200 shadow-xl">
@@ -35,7 +34,6 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Stats */}
       <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-400">
@@ -60,7 +58,6 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Story + Topics */}
       <section className="border-y-2 border-zinc-900 bg-white px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-2">
 
