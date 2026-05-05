@@ -1,0 +1,67 @@
+[
+  {
+    "firstName": "Kyle",
+    "lastName": "Alonzo",
+    "age": 21,
+    "gender": "male",
+    "contactNumber": "09123456789",
+    "email": "kylealonzo@email.com",
+    "role": "admin",
+    "username": "kylealonzo",
+    "password": "password123",
+    "address": "Manila City",
+    "isActive": true
+  },
+  {
+    "firstName": "Lmao",
+    "lastName": "Dela Cruz",
+    "age": 20,
+    "gender": "male",
+    "contactNumber": "09123456780",
+    "email": "lmaodelacruz@email.com",
+    "role": "viewer",
+    "username": "lmaodelacruz",
+    "password": "password123",
+    "address": "Quezon City",
+    "isActive": true
+  },
+  {
+    "firstName": "Patrick",
+    "lastName": "Jane",
+    "age": 22,
+    "gender": "male",
+    "contactNumber": "09123456781",
+    "email": "patrickjane@email.com",
+    "role": "editor",
+    "username": "patrickjane",
+    "password": "password123",
+    "address": "Pasig City",
+    "isActive": true
+  },
+  {
+    "firstName": "Red",
+    "lastName": "John",
+    "age": 23,
+    "gender": "male",
+    "contactNumber": "09123456782",
+    "email": "redjohn@email.com",
+    "role": "viewer",
+    "username": "redjohn",
+    "password": "password123",
+    "address": "Makati City",
+    "isActive": true
+  },
+  {
+    "firstName": "Ralph",
+    "lastName": "Wreckit",
+    "age": 24,
+    "gender": "male",
+    "contactNumber": "09123456783",
+    "email": "ralphwreckit@email.com",
+    "role": "editor",
+    "username": "ralphwreckit",
+    "password": "password123",
+    "address": "Taguig City",
+    "isActive": false
+  }
+]
