@@ -1,5 +1,7 @@
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import { BarChart, PieChart } from "@mui/x-charts";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 const stats = [
   { label: "Total Users", value: "120" },
@@ -190,6 +192,58 @@ function DashboardPage() {
           </CardContent>
         </Card>
       </Box>
+
+      <Card
+        sx={{
+          mt: 3,
+          borderRadius: "30px",
+          border: "2px solid #e4e4e7",
+          minHeight: 520,
+          boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+          overflow: "hidden",
+        }}
+      >
+        <CardContent sx={{ p: 0 }}>
+
+          <Typography
+            sx={{
+              fontSize: 30,
+              fontWeight: 800,
+              color: "#18181b",
+              fontFamily: "Outfit, Poppins, sans-serif",
+              pl: 2,
+              pt: 1,
+              mb: 1,
+            }}
+          >
+            Location Map
+          </Typography>
+          <Box
+            sx={{
+              height: 500,
+              width: "100%",
+            }}
+          >
+            <MapContainer
+              center={[14.604253, 120.994314]}
+              zoom={13}
+              style={{ height: "100%", width: "100%" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+
+              <Marker position={[14.604253, 120.994314]}>
+                <Popup>
+                  National University-Manila <br />
+                  551 F Jhocson St, Sampaloc, Manila
+                </Popup>
+              </Marker>
+            </MapContainer>
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
 }
