@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 
 alonzo-webprog-longexam/
+
+.env
+*.env
+node_modules
+dist
+.DS_Store
