@@ -7,123 +7,93 @@ function ReportsPage() {
   const reportRef = useRef(null);
 
   const handlePrint = () => {
-    const printContent = reportRef.current;
+    const style = document.createElement("style");
 
-    if (!printContent) return;
+    style.innerHTML = `
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
 
-    const printWindow = window.open("", "_blank", "width=1200,height=900");
+      @media print {
+        html,
+        body {
+          width: 210mm;
+          height: 297mm;
+          overflow: hidden;
+        }
 
-    if (!printWindow) return;
+        body * {
+          visibility: hidden;
+        }
 
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Reports Summary</title>
-          <style>
-            @page {
-              size: A4;
-              margin: 18mm;
-            }
+        #print-area,
+        #print-area * {
+          visibility: visible;
+        }
 
-            * {
-              box-sizing: border-box;
-            }
+        #print-area {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          padding: 0;
+        }
 
-            body {
-              margin: 0;
-              font-family: Poppins, Arial, sans-serif;
-              color: #18181b;
-              background: #ffffff;
-            }
+        .reports-grid {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+        }
 
-            .print-wrapper {
-              padding: 20px;
-            }
+        .print-section {
+          width: 100% !important;
+          height: 340px !important;
+          min-height: 340px !important;
+          max-height: 340px !important;
+          overflow: hidden !important;
+          box-shadow: none !important;
+          border-radius: 18px !important;
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
 
-            .print-header {
-              margin-bottom: 24px;
-              border-bottom: 2px solid #18181b;
-              padding-bottom: 16px;
-            }
+        .print-section .MuiCardContent-root {
+          padding: 14px !important;
+        }
 
-            .print-label {
-              font-size: 11px;
-              font-weight: 800;
-              letter-spacing: 0.24em;
-              text-transform: uppercase;
-              color: #71717a;
-              margin-bottom: 6px;
-            }
+        .print-section h2 {
+          font-size: 20px !important;
+          margin-bottom: 2px !important;
+        }
 
-            .print-title {
-              font-size: 34px;
-              font-weight: 800;
-              margin: 0;
-              font-family: Outfit, Poppins, Arial, sans-serif;
-            }
+        .print-section p {
+          font-size: 11px !important;
+          margin-bottom: 4px !important;
+        }
 
-            .print-description {
-              margin-top: 8px;
-              font-size: 14px;
-              color: #52525b;
-              line-height: 1.6;
-            }
+        .print-chart {
+          height: 220px !important;
+        }
 
-            .print-section {
-              border: 2px solid #e4e4e7;
-              border-radius: 22px;
-              padding: 20px;
-              margin-bottom: 20px;
-              page-break-inside: avoid;
-            }
+        .print-chart svg {
+          width: 100% !important;
+          height: 220px !important;
+        }
 
-            .print-section h2 {
-              font-size: 22px;
-              margin: 0 0 8px;
-              font-family: Outfit, Poppins, Arial, sans-serif;
-            }
+        button {
+          display: none !important;
+        }
+      }
+    `;
 
-            .print-section p {
-              font-size: 13px;
-              color: #52525b;
-              margin: 0 0 18px;
-              line-height: 1.6;
-            }
+    document.head.appendChild(style);
 
-            .print-chart {
-              width: 100%;
-              overflow: hidden;
-            }
-
-            svg {
-              max-width: 100%;
-            }
-          </style>
-        </head>
-
-        <body>
-          <div class="print-wrapper">
-            <div class="print-header">
-              <div class="print-label">Alonzo Creatives</div>
-              <h1 class="print-title">Reports Summary</h1>
-              <div class="print-description">
-                Visual reports for listings, users, and exchange activity.
-              </div>
-            </div>
-
-            ${printContent.innerHTML}
-          </div>
-        </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-    printWindow.focus();
+    window.print();
 
     setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
+      document.head.removeChild(style);
+    }, 1000);
   };
 
   return (
@@ -189,8 +159,9 @@ function ReportsPage() {
         </Button>
       </Box>
 
-      <Box ref={reportRef}>
+      <Box ref={reportRef} id="print-area">
         <Box
+          className="reports-grid"
           sx={{
             display: "grid",
             gridTemplateColumns: {

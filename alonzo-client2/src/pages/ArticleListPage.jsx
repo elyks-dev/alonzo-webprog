@@ -1,9 +1,24 @@
-import { Link } from 'react-router-dom';
-import Button from '../components/Button';
-import ArticleList from '../components/ArticleList';
-import articles from '../assets/article-content.js';
+import { useEffect, useState } from "react";
+import Button from "../components/Button";
+import ArticleList from "../components/ArticleList";
+import { fetchArticles } from "../services/ArticleService";
 
 const ArticleListPage = () => {
+  const [articles, setArticles] = useState([]);
+
+  const loadArticles = async () => {
+    try {
+      const { data } = await fetchArticles();
+      setArticles(data.articles);
+    } catch (error) {
+      console.error("Failed to fetch articles:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
+
   return (
     <div className="flex w-full flex-col gap-6">
       <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -40,6 +55,6 @@ const ArticleListPage = () => {
       </section>
     </div>
   );
-}
+};
 
 export default ArticleListPage;

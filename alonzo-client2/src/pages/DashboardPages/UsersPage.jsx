@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -13,13 +13,16 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Stack,
   Switch,
   TextField,
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import usersSeed from "../../assets/users.json";
+import {
+  fetchUsers,
+  createUser,
+  updateUser,
+} from "../../services/UserService";
 
 const emptyForm = {
   firstName: "",
@@ -42,13 +45,29 @@ const labelize = (value) =>
   value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : "";
 
 function UsersPage() {
-  const [rows, setRows] = useState(
-    usersSeed.map((user, index) => ({
-      id: index + 1,
-      ...user,
-    }))
-  );
+  const type = localStorage.getItem("type");
 
+  if (type === "editor") {
+    return (
+      <Box sx={{ p: 5 }}>
+        <Typography
+          sx={{
+            fontSize: "2rem",
+            fontWeight: 800,
+            color: "#ef4444",
+          }}
+        >
+          Access Denied
+        </Typography>
+
+        <Typography sx={{ mt: 1, color: "#52525b" }}>
+          Editors are not allowed to access this page.
+        </Typography>
+      </Box>
+    );
+  }
+
+  const [rows, setRows] = useState([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
@@ -58,6 +77,28 @@ function UsersPage() {
   const [editingUser, setEditingUser] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState({});
+
+  const loadUsers = async () => {
+    try {
+      const { data } = await fetchUsers();
+
+      const usersFromDB = data.users.map((user, index) => ({
+        id: user._id,
+        displayId: index + 1,
+        ...user,
+        role: user.type,
+        password: "",
+      }));
+
+      setRows(usersFromDB);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -101,7 +142,11 @@ function UsersPage() {
       newErrors.contactNumber = "Contact number must be 11 digits.";
     }
 
-    if (form.password.length < 8) {
+    if (!editingUser && form.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters.";
+    }
+
+    if (editingUser && form.password && form.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters.";
     }
 
@@ -118,7 +163,10 @@ function UsersPage() {
 
   const handleOpenEdit = (user) => {
     setEditingUser(user);
-    setForm(user);
+    setForm({
+      ...user,
+      password: "",
+    });
     setErrors({});
     setOpen(true);
   };
@@ -130,45 +178,59 @@ function UsersPage() {
     setErrors({});
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validateForm()) return;
 
-    if (editingUser) {
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === editingUser.id
-            ? {
-                ...form,
-                id: editingUser.id,
-                age: Number(form.age),
-              }
-            : row
-        )
-      );
-    } else {
-      setRows((prevRows) => [
-        ...prevRows,
-        {
-          ...form,
-          id: prevRows.length ? Math.max(...prevRows.map((row) => row.id)) + 1 : 1,
-          age: Number(form.age),
-        },
-      ]);
-    }
+    try {
+      const payload = {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        age: String(form.age),
+        gender: form.gender,
+        contactNumber: form.contactNumber,
+        email: form.email,
+        type: form.role,
+        username: form.username,
+        address: form.address,
+        isActive: form.isActive,
+      };
 
-    handleClose();
+      if (form.password) {
+        payload.password = form.password;
+      }
+
+      if (editingUser) {
+        await updateUser(editingUser.id, payload);
+      } else {
+        await createUser(payload);
+      }
+
+      await loadUsers();
+      handleClose();
+    } catch (error) {
+      console.error("Failed to save user:", error);
+      setErrors({
+        form:
+          error.response?.data?.message ||
+          "Failed to save user. Please try again.",
+      });
+    }
   };
 
-  const handleToggleStatus = (user) => {
-    setRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === user.id ? { ...row, isActive: !row.isActive } : row
-      )
-    );
+  const handleToggleStatus = async (user) => {
+    try {
+      await updateUser(user.id, {
+        isActive: !user.isActive,
+      });
+
+      await loadUsers();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
+    { field: "displayId", headerName: "ID", width: 90 },
     {
       field: "fullName",
       headerName: "Full Name",
@@ -198,21 +260,33 @@ function UsersPage() {
     {
       field: "actions",
       headerName: "Actions",
-      width: 190,
+      width: 210,
       sortable: false,
       renderCell: (params) => (
-        <Stack direction="row" spacing={1}>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 0.8,
+          }}
+        >
           <Button
             size="small"
             variant="outlined"
             onClick={() => handleOpenEdit(params.row)}
             sx={{
+              minWidth: 70,
+              height: 32,
               borderRadius: "999px",
               fontWeight: 800,
               fontSize: 11,
+              borderWidth: "2px",
             }}
           >
-            Edit
+            EDIT
           </Button>
 
           <Button
@@ -220,18 +294,21 @@ function UsersPage() {
             variant="contained"
             onClick={() => handleToggleStatus(params.row)}
             sx={{
+              minWidth: 90,
+              height: 32,
               borderRadius: "999px",
               fontWeight: 800,
               fontSize: 11,
+              boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
               bgcolor: params.row.isActive ? "#ef4444" : "#22c55e",
               "&:hover": {
                 bgcolor: params.row.isActive ? "#dc2626" : "#16a34a",
               },
             }}
           >
-            {params.row.isActive ? "Disable" : "Activate"}
+            {params.row.isActive ? "DISABLE" : "ACTIVATE"}
           </Button>
-        </Stack>
+        </Box>
       ),
     },
   ];
@@ -272,10 +349,13 @@ function UsersPage() {
         }}
       >
         <CardContent sx={{ p: 3 }}>
-          <Stack
-            direction={{ xs: "column", md: "row" }}
-            spacing={2}
-            sx={{ mb: 3 }}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: 2,
+              mb: 3,
+            }}
           >
             <TextField
               fullWidth
@@ -345,13 +425,12 @@ function UsersPage() {
             >
               Add User
             </Button>
-          </Stack>
+          </Box>
 
           <Box sx={{ height: 520, width: "100%" }}>
             <DataGrid
               rows={filteredRows}
               columns={columns}
-              checkboxSelection
               pageSizeOptions={[5]}
               initialState={{
                 pagination: {
@@ -382,10 +461,6 @@ function UsersPage() {
                   bgcolor: "#faf5ff",
                 },
 
-                "& .MuiCheckbox-root.Mui-checked": {
-                  color: "#8b5cf6",
-                },
-
                 "& .MuiDataGrid-footerContainer": {
                   borderTop: "2px solid #e4e4e7",
                 },
@@ -406,6 +481,12 @@ function UsersPage() {
         </DialogTitle>
 
         <DialogContent>
+          {errors.form && (
+            <Typography sx={{ color: "#ef4444", mb: 2 }}>
+              {errors.form}
+            </Typography>
+          )}
+
           <Box
             sx={{
               display: "grid",
@@ -513,7 +594,11 @@ function UsersPage() {
               type="password"
               value={form.password}
               error={Boolean(errors.password)}
-              helperText={errors.password}
+              helperText={
+                editingUser
+                  ? errors.password || "Leave blank to keep current password."
+                  : errors.password
+              }
               onChange={(event) =>
                 setForm({ ...form, password: event.target.value })
               }

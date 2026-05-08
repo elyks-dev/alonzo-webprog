@@ -8,10 +8,12 @@ import HomePage from "./pages/HomePage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import NotFoundPage from "./pages/NotFoundPage";
+
 import DashLayout from "./layouts/DashLayout";
 import DashboardPage from "./pages/DashboardPages/DashboardPage";
 import ReportsPage from "./pages/DashboardPages/ReportsPage";
 import UsersPage from "./pages/DashboardPages/UsersPage";
+import DashArticleListPage from "./pages/DashboardPages/DashArticleListPage";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -51,6 +53,10 @@ const routes = [
       {
         path: "users",
         element: <UsersPage />,
+      },
+      {
+        path: "articles",
+        element: <DashArticleListPage />,
       },
     ],
   },

@@ -12,9 +12,11 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
+
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 const drawerWidth = 240;
@@ -35,11 +37,24 @@ const dashboardLinks = [
     path: "/dashboard/users",
     icon: <PeopleAltOutlinedIcon />,
   },
+  {
+    label: "Articles",
+    path: "/dashboard/articles",
+    icon: <ArticleOutlinedIcon />,
+  },
 ];
 
 const DashLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("type");
+
+    navigate("/signin");
+  };
 
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: "#fafafa" }}>
@@ -95,27 +110,51 @@ const DashLayout = () => {
 
           <Box sx={{ flexGrow: 1 }} />
 
-          <Button
-            component={Link}
-            to="/"
-            sx={{
-              borderRadius: "999px",
-              border: "2px solid #ffffff",
-              px: 2.5,
-              py: 0.8,
-              color: "#ffffff",
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              "&:hover": {
-                bgcolor: "#ffffff",
-                color: "#18181b",
-              },
-            }}
-          >
-            Main Site
-          </Button>
+          <Box sx={{ display: "flex", gap: 1.5 }}>
+            <Button
+              component={Link}
+              to="/"
+              sx={{
+                borderRadius: "999px",
+                border: "2px solid #ffffff",
+                px: 2.5,
+                py: 0.8,
+                color: "#ffffff",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                "&:hover": {
+                  bgcolor: "#ffffff",
+                  color: "#18181b",
+                },
+              }}
+            >
+              Main Site
+            </Button>
+
+            <Button
+              onClick={handleLogout}
+              sx={{
+                borderRadius: "999px",
+                border: "2px solid #ef4444",
+                px: 2.5,
+                py: 0.8,
+                color: "#ffffff",
+                bgcolor: "#ef4444",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                "&:hover": {
+                  bgcolor: "#dc2626",
+                  borderColor: "#dc2626",
+                },
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
