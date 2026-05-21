@@ -1,14 +1,16 @@
-import { Outlet } from 'react-router-dom';
-import NavBar from './NavBar';
-import Footer from './Footer';
+import { Outlet } from "react-router-dom";
+import NavBar from "./NavBar";
+import Footer from "./Footer";
 
 const Layout = () => {
   return (
-    <div className="min-h-screen bg-zinc-100 text-zinc-900">
+    <div className="min-h-screen bg-[#111113] text-zinc-100">
       <NavBar />
-      <main className="pt-20">
+
+      <main className="min-h-screen bg-[#111113]">
         <Outlet />
       </main>
+
       <Footer />
     </div>
   );

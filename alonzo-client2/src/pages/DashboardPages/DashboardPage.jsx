@@ -1,25 +1,107 @@
+import { useEffect, useMemo, useState } from "react";
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import { BarChart, PieChart } from "@mui/x-charts";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { fetchUsers } from "../../services/UserService";
+import { fetchArticles } from "../../services/ArticleService";
+import { fetchPosts } from "../../services/PostService";
 
-const stats = [
-  { label: "Total Users", value: "120" },
-  { label: "Active Listings", value: "48" },
-  { label: "Completed Trades", value: "32" },
-  { label: "Pending Reports", value: "6" },
+const monthLabels = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 function DashboardPage() {
+  const [users, setUsers] = useState([]);
+  const [articles, setArticles] = useState([]);
+  const [posts, setPosts] = useState([]);
+
+  const loadDashboardData = async () => {
+    try {
+      const [usersResponse, articlesResponse, postsResponse] =
+        await Promise.all([fetchUsers(), fetchArticles(), fetchPosts()]);
+
+      setUsers(usersResponse.data.users || []);
+      setArticles(articlesResponse.data.articles || []);
+      setPosts(postsResponse.data.posts || []);
+    } catch (error) {
+      console.error("Failed to load dashboard data:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const totalReplies = useMemo(() => {
+    return posts.reduce((total, post) => total + (post.replies?.length || 0), 0);
+  }, [posts]);
+
+  const activeUsers = useMemo(() => {
+    return users.filter((user) => user.isActive).length;
+  }, [users]);
+
+  const stats = [
+    { label: "Total Users", value: users.length },
+    { label: "Articles Published", value: articles.length },
+    { label: "Discussions Posted", value: posts.length },
+    { label: "Replies Shared", value: totalReplies },
+  ];
+
+  const monthlyData = useMemo(() => {
+    const articleCounts = Array(12).fill(0);
+    const postCounts = Array(12).fill(0);
+    const replyCounts = Array(12).fill(0);
+
+    articles.forEach((article) => {
+      const month = new Date(article.createdAt).getMonth();
+      articleCounts[month] += 1;
+    });
+
+    posts.forEach((post) => {
+      const postMonth = new Date(post.createdAt).getMonth();
+      postCounts[postMonth] += 1;
+
+      post.replies?.forEach((reply) => {
+        const replyMonth = new Date(reply.createdAt).getMonth();
+        replyCounts[replyMonth] += 1;
+      });
+    });
+
+    return {
+      articleCounts,
+      postCounts,
+      replyCounts,
+    };
+  }, [articles, posts]);
+
+  const pieData = [
+    { id: 0, value: articles.length, label: "Articles" },
+    { id: 1, value: posts.length, label: "Discussions" },
+    { id: 2, value: totalReplies, label: "Replies" },
+    { id: 3, value: activeUsers, label: "Active Users" },
+  ];
+
   return (
     <Box>
       <Typography
         sx={{
           fontSize: { xs: "2.2rem", md: "3.2rem" },
-          fontWeight: 800,
-          letterSpacing: "-0.04em",
+          fontWeight: 900,
+          letterSpacing: "-0.05em",
           lineHeight: 1,
-          color: "#18181b",
+          color: "#f4f4f5",
           fontFamily: "Outfit, Poppins, sans-serif",
           mb: 1,
         }}
@@ -29,14 +111,14 @@ function DashboardPage() {
 
       <Typography
         sx={{
-          color: "#52525b",
+          color: "#a1a1aa",
           fontSize: "1rem",
           fontWeight: 500,
           fontFamily: "Poppins, sans-serif",
           mb: 4,
         }}
       >
-        Quick summary of user activity and exchange performance.
+        Quick summary of platform activity, articles, discussions, and users.
       </Typography>
 
       <Box
@@ -57,17 +139,25 @@ function DashboardPage() {
             sx={{
               minHeight: 150,
               borderRadius: "28px",
-              border: "2px solid #e4e4e7",
-              borderTop: "6px solid #8b5cf6",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+              border: "1px solid #27272a",
+              bgcolor: "#18181b",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
+              transition: "0.2s ease",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                borderColor: "rgba(167, 139, 250, 0.5)",
+                bgcolor: "#1d1d22",
+              },
             }}
           >
             <CardContent sx={{ p: 3 }}>
               <Typography
                 sx={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#52525b",
+                  fontSize: 13,
+                  fontWeight: 800,
+                  color: "#a1a1aa",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
                   fontFamily: "Poppins, sans-serif",
                 }}
               >
@@ -77,11 +167,11 @@ function DashboardPage() {
               <Typography
                 sx={{
                   fontSize: "3.6rem",
-                  fontWeight: 800,
+                  fontWeight: 900,
                   lineHeight: 1,
                   mt: 1.5,
-                  color: "#18181b",
-                  letterSpacing: "-0.04em",
+                  color: "#f4f4f5",
+                  letterSpacing: "-0.06em",
                   fontFamily: "Outfit, Poppins, sans-serif",
                 }}
               >
@@ -105,22 +195,36 @@ function DashboardPage() {
         <Card
           sx={{
             borderRadius: "30px",
-            border: "2px solid #e4e4e7",
+            border: "1px solid #27272a",
+            bgcolor: "#18181b",
             minHeight: 520,
-            boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
           }}
         >
           <CardContent sx={{ p: 4 }}>
             <Typography
               sx={{
                 fontSize: 30,
-                fontWeight: 800,
-                color: "#18181b",
+                fontWeight: 900,
+                color: "#f4f4f5",
                 fontFamily: "Outfit, Poppins, sans-serif",
-                mb: 3,
+                mb: 1,
               }}
             >
               Monthly Activity
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "#a1a1aa",
+                fontSize: "0.95rem",
+                lineHeight: 1.8,
+                fontFamily: "Poppins, sans-serif",
+                mb: 3,
+              }}
+            >
+              Displays current platform activity based on articles,
+              discussions, and replies from the database.
             </Typography>
 
             <Box sx={{ height: 400 }}>
@@ -130,12 +234,22 @@ function DashboardPage() {
                 xAxis={[
                   {
                     scaleType: "band",
-                    data: ["Jan", "Feb", "Mar", "Apr", "May"],
+                    data: monthLabels,
                   },
                 ]}
                 series={[
-                  { data: [18, 26, 35, 30, 44], label: "Listings" },
-                  { data: [10, 18, 24, 22, 31], label: "Trades" },
+                  {
+                    data: monthlyData.articleCounts,
+                    label: "Articles",
+                  },
+                  {
+                    data: monthlyData.postCounts,
+                    label: "Discussions",
+                  },
+                  {
+                    data: monthlyData.replyCounts,
+                    label: "Replies",
+                  },
                 ]}
               />
             </Box>
@@ -145,22 +259,36 @@ function DashboardPage() {
         <Card
           sx={{
             borderRadius: "30px",
-            border: "2px solid #e4e4e7",
+            border: "1px solid #27272a",
+            bgcolor: "#18181b",
             minHeight: 520,
-            boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
           }}
         >
           <CardContent sx={{ p: 4 }}>
             <Typography
               sx={{
                 fontSize: 30,
-                fontWeight: 800,
-                color: "#18181b",
+                fontWeight: 900,
+                color: "#f4f4f5",
                 fontFamily: "Outfit, Poppins, sans-serif",
+                mb: 1,
+              }}
+            >
+              Platform Summary
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "#a1a1aa",
+                fontSize: "0.95rem",
+                lineHeight: 1.8,
+                fontFamily: "Poppins, sans-serif",
                 mb: 3,
               }}
             >
-              Category Summary
+              Visual breakdown of current content and engagement distribution
+              across the platform.
             </Typography>
 
             <Box sx={{ height: 400 }}>
@@ -170,12 +298,7 @@ function DashboardPage() {
                 series={[
                   {
                     outerRadius: 125,
-                    data: [
-                      { id: 0, value: 35, label: "Uniforms" },
-                      { id: 1, value: 25, label: "Books" },
-                      { id: 2, value: 20, label: "Supplies" },
-                      { id: 3, value: 20, label: "Others" },
-                    ],
+                    data: pieData,
                   },
                 ]}
                 slotProps={{
@@ -197,31 +320,53 @@ function DashboardPage() {
         sx={{
           mt: 3,
           borderRadius: "30px",
-          border: "2px solid #e4e4e7",
+          border: "1px solid #27272a",
+          bgcolor: "#18181b",
           minHeight: 520,
-          boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+          boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
           overflow: "hidden",
         }}
       >
         <CardContent sx={{ p: 0 }}>
-
-          <Typography
+          <Box
             sx={{
-              fontSize: 30,
-              fontWeight: 800,
-              color: "#18181b",
-              fontFamily: "Outfit, Poppins, sans-serif",
-              pl: 2,
-              pt: 1,
-              mb: 1,
+              px: 4,
+              pt: 4,
+              pb: 2,
             }}
           >
-            Location Map
-          </Typography>
+            <Typography
+              sx={{
+                fontSize: 30,
+                fontWeight: 900,
+                color: "#f4f4f5",
+                fontFamily: "Outfit, Poppins, sans-serif",
+              }}
+            >
+              Location Map
+            </Typography>
+
+            <Typography
+              sx={{
+                mt: 1,
+                color: "#a1a1aa",
+                fontSize: "0.95rem",
+                lineHeight: 1.8,
+                fontFamily: "Poppins, sans-serif",
+                maxWidth: 700,
+              }}
+            >
+              Work in progress. Future updates will include live user activity,
+              regional engagement tracking, and interactive community insights.
+            </Typography>
+          </Box>
+
           <Box
             sx={{
               height: 500,
               width: "100%",
+              position: "relative",
+              filter: "saturate(0.75) brightness(0.9)",
             }}
           >
             <MapContainer
@@ -241,6 +386,33 @@ function DashboardPage() {
                 </Popup>
               </Marker>
             </MapContainer>
+
+            <Box
+              sx={{
+                position: "absolute",
+                top: 20,
+                right: 20,
+                zIndex: 999,
+                px: 2,
+                py: 1,
+                borderRadius: "999px",
+                border: "1px solid rgba(167, 139, 250, 0.4)",
+                bgcolor: "rgba(17,17,19,0.82)",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  fontWeight: 800,
+                  letterSpacing: "0.08em",
+                  color: "#c4b5fd",
+                  textTransform: "uppercase",
+                }}
+              >
+                Work in Progress
+              </Typography>
+            </Box>
           </Box>
         </CardContent>
       </Card>

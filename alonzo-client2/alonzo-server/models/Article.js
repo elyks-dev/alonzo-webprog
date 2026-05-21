@@ -13,10 +13,19 @@ const articleSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
+      default: "",
+    },
+    images: {
+      type: [String],
+      default: [],
     },
     content: {
       type: [String],
+      required: true,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
   },

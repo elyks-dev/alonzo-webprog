@@ -44,23 +44,156 @@ const genders = ["male", "female", "other"];
 const labelize = (value) =>
   value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : "";
 
+const textFieldSx = {
+  "& .MuiInputLabel-root": {
+    color: "#a1a1aa",
+    backgroundColor: "#18181b",
+    px: 0.8,
+  },
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#c4b5fd",
+  },
+  "& .MuiOutlinedInput-root": {
+    color: "#f4f4f5",
+    borderRadius: "18px",
+    bgcolor: "#111113",
+    "& fieldset": { borderColor: "#3f3f46" },
+    "&:hover fieldset": { borderColor: "#71717a" },
+    "&.Mui-focused fieldset": { borderColor: "#a78bfa" },
+  },
+  "& .MuiInputBase-input": {
+    color: "#f4f4f5",
+  },
+  "& .MuiFormHelperText-root": {
+    color: "#a1a1aa",
+  },
+};
+
+const selectSx = {
+  minWidth: 150,
+  "& .MuiInputLabel-root": {
+    color: "#a1a1aa",
+    backgroundColor: "#18181b",
+    px: 0.8,
+  },
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#c4b5fd",
+  },
+  "& .MuiOutlinedInput-root": {
+    color: "#f4f4f5",
+    borderRadius: "18px",
+    bgcolor: "#111113",
+    "& fieldset": { borderColor: "#3f3f46" },
+    "&:hover fieldset": { borderColor: "#71717a" },
+    "&.Mui-focused fieldset": { borderColor: "#a78bfa" },
+  },
+  "& .MuiSelect-select": {
+    color: "#f4f4f5",
+  },
+  "& .MuiSvgIcon-root": {
+    color: "#a1a1aa",
+  },
+};
+
+const dataGridSx = {
+  border: "none",
+  fontFamily: "Poppins, sans-serif",
+  color: "#e4e4e7",
+  fontSize: 15,
+  bgcolor: "#18181b",
+
+  "& .MuiDataGrid-main": {
+    bgcolor: "#18181b",
+  },
+
+  "& .MuiDataGrid-container--top [role=row]": {
+    bgcolor: "#111113",
+  },
+
+  "& .MuiDataGrid-columnHeaders": {
+    borderBottom: "1px solid #3f3f46",
+    bgcolor: "#111113",
+  },
+
+  "& .MuiDataGrid-columnHeader": {
+    bgcolor: "#111113",
+  },
+
+  "& .MuiDataGrid-columnHeaderTitle": {
+    fontWeight: 900,
+    color: "#c4b5fd",
+    fontFamily: "Outfit, Poppins, sans-serif",
+  },
+
+  "& .MuiDataGrid-columnSeparator": {
+    color: "#3f3f46",
+  },
+
+  "& .MuiDataGrid-virtualScroller": {
+    bgcolor: "#18181b",
+  },
+
+  "& .MuiDataGrid-row": {
+    bgcolor: "#18181b",
+  },
+
+  "& .MuiDataGrid-cell": {
+    borderBottom: "1px solid #27272a",
+    color: "#e4e4e7",
+    bgcolor: "#18181b",
+  },
+
+  "& .MuiDataGrid-row:hover": {
+    bgcolor: "rgba(139, 92, 246, 0.08)",
+  },
+
+  "& .MuiDataGrid-footerContainer": {
+    borderTop: "1px solid #3f3f46",
+    color: "#a1a1aa",
+    bgcolor: "#111113",
+  },
+
+  "& .MuiTablePagination-root": {
+    color: "#a1a1aa",
+  },
+
+  "& .MuiDataGrid-toolbarContainer": {
+    bgcolor: "#18181b",
+  },
+
+  "& .MuiDataGrid-overlay": {
+    bgcolor: "#18181b",
+  },
+
+  "& .MuiDataGrid-filler": {
+    backgroundColor: "#18181b",
+  },
+};
+
 function UsersPage() {
   const type = localStorage.getItem("type");
 
   if (type === "editor") {
     return (
-      <Box sx={{ p: 5 }}>
+      <Box
+        sx={{
+          p: 5,
+          borderRadius: "30px",
+          bgcolor: "#18181b",
+          border: "1px solid #27272a",
+        }}
+      >
         <Typography
           sx={{
             fontSize: "2rem",
-            fontWeight: 800,
-            color: "#ef4444",
+            fontWeight: 900,
+            color: "#f87171",
           }}
         >
           Access Denied
         </Typography>
 
-        <Typography sx={{ mt: 1, color: "#52525b" }}>
+        <Typography sx={{ mt: 1, color: "#a1a1aa" }}>
           Editors are not allowed to access this page.
         </Typography>
       </Box>
@@ -281,9 +414,15 @@ function UsersPage() {
               minWidth: 70,
               height: 32,
               borderRadius: "999px",
-              fontWeight: 800,
+              fontWeight: 900,
               fontSize: 11,
               borderWidth: "2px",
+              color: "#c4b5fd",
+              borderColor: "#8b5cf6",
+              "&:hover": {
+                borderColor: "#c4b5fd",
+                bgcolor: "rgba(139, 92, 246, 0.12)",
+              },
             }}
           >
             EDIT
@@ -297,7 +436,7 @@ function UsersPage() {
               minWidth: 90,
               height: 32,
               borderRadius: "999px",
-              fontWeight: 800,
+              fontWeight: 900,
               fontSize: 11,
               boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
               bgcolor: params.row.isActive ? "#ef4444" : "#22c55e",
@@ -318,10 +457,10 @@ function UsersPage() {
       <Typography
         sx={{
           fontSize: { xs: "2.2rem", md: "3.2rem" },
-          fontWeight: 800,
-          letterSpacing: "-0.04em",
+          fontWeight: 900,
+          letterSpacing: "-0.05em",
           lineHeight: 1,
-          color: "#18181b",
+          color: "#f4f4f5",
           fontFamily: "Outfit, Poppins, sans-serif",
           mb: 1,
         }}
@@ -331,7 +470,7 @@ function UsersPage() {
 
       <Typography
         sx={{
-          color: "#52525b",
+          color: "#a1a1aa",
           fontSize: "1rem",
           fontWeight: 500,
           fontFamily: "Poppins, sans-serif",
@@ -344,8 +483,9 @@ function UsersPage() {
       <Card
         sx={{
           borderRadius: "30px",
-          border: "2px solid #e4e4e7",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+          border: "1px solid #27272a",
+          bgcolor: "#18181b",
+          boxShadow: "0 20px 50px rgba(0,0,0,0.22)",
         }}
       >
         <CardContent sx={{ p: 3 }}>
@@ -363,9 +503,10 @@ function UsersPage() {
               placeholder="Search by name, email, or username"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
+              sx={textFieldSx}
             />
 
-            <FormControl sx={{ minWidth: 150 }}>
+            <FormControl sx={selectSx}>
               <InputLabel>Role</InputLabel>
               <Select
                 label="Role"
@@ -381,7 +522,7 @@ function UsersPage() {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ minWidth: 150 }}>
+            <FormControl sx={selectSx}>
               <InputLabel>Gender</InputLabel>
               <Select
                 label="Gender"
@@ -397,7 +538,7 @@ function UsersPage() {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ minWidth: 150 }}>
+            <FormControl sx={selectSx}>
               <InputLabel>Status</InputLabel>
               <Select
                 label="Status"
@@ -415,9 +556,10 @@ function UsersPage() {
               onClick={handleOpenAdd}
               sx={{
                 borderRadius: "999px",
-                px: 3,
-                fontWeight: 800,
-                bgcolor: "#8b5cf6",
+                px: 5,
+                fontWeight: 700,
+                bgcolor: "#a78bfa",
+                whiteSpace: "nowrap",
                 "&:hover": {
                   bgcolor: "#7c3aed",
                 },
@@ -437,44 +579,43 @@ function UsersPage() {
                   paginationModel: { pageSize: 5 },
                 },
               }}
-              sx={{
-                border: "none",
-                fontFamily: "Poppins, sans-serif",
-                color: "#27272a",
-                fontSize: 15,
-
-                "& .MuiDataGrid-columnHeaders": {
-                  borderBottom: "2px solid #e4e4e7",
-                },
-
-                "& .MuiDataGrid-columnHeaderTitle": {
-                  fontWeight: 800,
-                  color: "#4c1d95",
-                  fontFamily: "Outfit, Poppins, sans-serif",
-                },
-
-                "& .MuiDataGrid-cell": {
-                  borderBottom: "1px solid #e4e4e7",
-                },
-
-                "& .MuiDataGrid-row:hover": {
-                  bgcolor: "#faf5ff",
-                },
-
-                "& .MuiDataGrid-footerContainer": {
-                  borderTop: "2px solid #e4e4e7",
-                },
-              }}
+              sx={dataGridSx}
             />
           </Box>
         </CardContent>
       </Card>
 
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+      <Dialog
+          open={open}
+          onClose={handleClose}
+          fullWidth
+          maxWidth="md"
+          slotProps={{
+            paper: {
+              sx: {
+                borderRadius: "28px",
+                bgcolor: "#18181b",
+                color: "#f4f4f5",
+                border: "1px solid #27272a",
+                boxShadow: "0 24px 80px rgba(0,0,0,0.65)",
+              },
+            },
+            backdrop: {
+              sx: {
+                bgcolor: "rgba(0,0,0,0.72)",
+                backdropFilter: "blur(6px)",
+              },
+            },
+          }}
+        >
+
         <DialogTitle
           sx={{
-            fontWeight: 800,
+            fontWeight: 900,
             fontFamily: "Outfit, Poppins, sans-serif",
+            color: "#f4f4f5",
+            borderBottom: "1px solid #27272a",
+            pb: 2,
           }}
         >
           {editingUser ? "Edit User" : "Add User"}
@@ -482,7 +623,7 @@ function UsersPage() {
 
         <DialogContent>
           {errors.form && (
-            <Typography sx={{ color: "#ef4444", mb: 2 }}>
+            <Typography sx={{ color: "#f87171", mb: 2 }}>
               {errors.form}
             </Typography>
           )}
@@ -503,6 +644,7 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, firstName: event.target.value })
               }
+              sx={textFieldSx}
             />
 
             <TextField
@@ -513,6 +655,7 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, lastName: event.target.value })
               }
+              sx={textFieldSx}
             />
 
             <TextField
@@ -523,9 +666,10 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, age: event.target.value })
               }
+              sx={textFieldSx}
             />
 
-            <FormControl>
+            <FormControl sx={selectSx}>
               <InputLabel>Gender</InputLabel>
               <Select
                 label="Gender"
@@ -550,6 +694,7 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, contactNumber: event.target.value })
               }
+              sx={textFieldSx}
             />
 
             <TextField
@@ -560,9 +705,10 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, email: event.target.value })
               }
+              sx={textFieldSx}
             />
 
-            <FormControl>
+            <FormControl sx={selectSx}>
               <InputLabel>Role</InputLabel>
               <Select
                 label="Role"
@@ -587,6 +733,7 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, username: event.target.value })
               }
+              sx={textFieldSx}
             />
 
             <TextField
@@ -602,6 +749,7 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, password: event.target.value })
               }
+              sx={textFieldSx}
             />
 
             <TextField
@@ -610,15 +758,25 @@ function UsersPage() {
               onChange={(event) =>
                 setForm({ ...form, address: event.target.value })
               }
+              sx={textFieldSx}
             />
 
             <FormControlLabel
+              sx={{ color: "#a1a1aa" }}
               control={
                 <Switch
                   checked={form.isActive}
                   onChange={(event) =>
                     setForm({ ...form, isActive: event.target.checked })
                   }
+                  sx={{
+                    "& .MuiSwitch-switchBase.Mui-checked": {
+                      color: "#8b5cf6",
+                    },
+                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                      backgroundColor: "#8b5cf6",
+                    },
+                  }}
                 />
               }
               label={form.isActive ? "Active" : "Inactive"}
@@ -627,12 +785,17 @@ function UsersPage() {
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose} sx={{ color: "#a1a1aa" }}>
+            Cancel
+          </Button>
+
           <Button
             variant="contained"
             onClick={handleSave}
             sx={{
+              borderRadius: "999px",
               bgcolor: "#8b5cf6",
+              fontWeight: 900,
               "&:hover": {
                 bgcolor: "#7c3aed",
               },

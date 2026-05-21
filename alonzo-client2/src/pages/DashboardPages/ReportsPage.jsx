@@ -1,10 +1,70 @@
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { BarChart, LineChart } from "@mui/x-charts";
+import { fetchUsers } from "../../services/UserService";
+import { fetchArticles } from "../../services/ArticleService";
+import { fetchPosts } from "../../services/PostService";
+
+const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function ReportsPage() {
   const reportRef = useRef(null);
+
+  const [users, setUsers] = useState([]);
+  const [articles, setArticles] = useState([]);
+  const [posts, setPosts] = useState([]);
+
+  const loadReportsData = async () => {
+    try {
+      const [usersResponse, articlesResponse, postsResponse] =
+        await Promise.all([fetchUsers(), fetchArticles(), fetchPosts()]);
+
+      setUsers(usersResponse.data.users || []);
+      setArticles(articlesResponse.data.articles || []);
+      setPosts(postsResponse.data.posts || []);
+    } catch (error) {
+      console.error("Failed to load reports data:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadReportsData();
+  }, []);
+
+  const monthlyData = useMemo(() => {
+    const userCounts = Array(12).fill(0);
+    const articleCounts = Array(12).fill(0);
+    const discussionCounts = Array(12).fill(0);
+    const replyCounts = Array(12).fill(0);
+
+    users.forEach((user) => {
+      const month = new Date(user.createdAt).getMonth();
+      if (!Number.isNaN(month)) userCounts[month] += 1;
+    });
+
+    articles.forEach((article) => {
+      const month = new Date(article.createdAt).getMonth();
+      if (!Number.isNaN(month)) articleCounts[month] += 1;
+    });
+
+    posts.forEach((post) => {
+      const month = new Date(post.createdAt).getMonth();
+      if (!Number.isNaN(month)) discussionCounts[month] += 1;
+
+      post.replies?.forEach((reply) => {
+        const replyMonth = new Date(reply.createdAt).getMonth();
+        if (!Number.isNaN(replyMonth)) replyCounts[replyMonth] += 1;
+      });
+    });
+
+    return {
+      userCounts,
+      articleCounts,
+      discussionCounts,
+      replyCounts,
+    };
+  }, [users, articles, posts]);
 
   const handlePrint = () => {
     const style = document.createElement("style");
@@ -88,7 +148,6 @@ function ReportsPage() {
     `;
 
     document.head.appendChild(style);
-
     window.print();
 
     setTimeout(() => {
@@ -112,10 +171,10 @@ function ReportsPage() {
           <Typography
             sx={{
               fontSize: { xs: "2.2rem", md: "3.2rem" },
-              fontWeight: 800,
-              letterSpacing: "-0.04em",
+              fontWeight: 900,
+              letterSpacing: "-0.05em",
               lineHeight: 1,
-              color: "#18181b",
+              color: "#f4f4f5",
               fontFamily: "Outfit, Poppins, sans-serif",
               mb: 1,
             }}
@@ -125,13 +184,13 @@ function ReportsPage() {
 
           <Typography
             sx={{
-              color: "#52525b",
+              color: "#a1a1aa",
               fontSize: "1rem",
               fontWeight: 500,
               fontFamily: "Poppins, sans-serif",
             }}
           >
-            Visual reports for listings, users, and exchange activity.
+            Visual reports for users, articles, discussions, and replies.
           </Typography>
         </Box>
 
@@ -140,18 +199,19 @@ function ReportsPage() {
           startIcon={<PrintOutlinedIcon />}
           sx={{
             borderRadius: "999px",
-            border: "2px solid #18181b",
+            border: "1px solid #8b5cf6",
             px: 2.5,
             py: 1,
-            color: "#18181b",
+            color: "#f4f4f5",
+            bgcolor: "#8b5cf6",
             fontSize: 12,
-            fontWeight: 800,
+            fontWeight: 900,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
             fontFamily: "Poppins, sans-serif",
             "&:hover": {
-              bgcolor: "#18181b",
-              color: "#ffffff",
+              bgcolor: "#7c3aed",
+              borderColor: "#7c3aed",
             },
           }}
         >
@@ -175,9 +235,10 @@ function ReportsPage() {
             className="print-section"
             sx={{
               borderRadius: "30px",
-              border: "2px solid #e4e4e7",
+              border: "1px solid #27272a",
+              bgcolor: "#18181b",
               minHeight: 520,
-              boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
             }}
           >
             <CardContent sx={{ p: 4 }}>
@@ -185,8 +246,8 @@ function ReportsPage() {
                 component="h2"
                 sx={{
                   fontSize: 30,
-                  fontWeight: 800,
-                  color: "#18181b",
+                  fontWeight: 900,
+                  color: "#f4f4f5",
                   fontFamily: "Outfit, Poppins, sans-serif",
                   mb: 1,
                 }}
@@ -196,14 +257,13 @@ function ReportsPage() {
 
               <Typography
                 sx={{
-                  color: "#52525b",
+                  color: "#a1a1aa",
                   fontSize: 14,
                   fontFamily: "Poppins, sans-serif",
                   mb: 3,
                 }}
               >
-                This chart shows the increase of registered users from January
-                to June.
+                This chart shows monthly registered users from the database.
               </Typography>
 
               <Box className="print-chart" sx={{ height: 400 }}>
@@ -212,13 +272,13 @@ function ReportsPage() {
                   margin={{ top: 20, right: 30, bottom: 50, left: 55 }}
                   xAxis={[
                     {
-                      data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                      data: monthLabels,
                       scaleType: "point",
                     },
                   ]}
                   series={[
                     {
-                      data: [20, 35, 48, 60, 85, 120],
+                      data: monthlyData.userCounts,
                       label: "Users",
                     },
                   ]}
@@ -231,9 +291,10 @@ function ReportsPage() {
             className="print-section"
             sx={{
               borderRadius: "30px",
-              border: "2px solid #e4e4e7",
+              border: "1px solid #27272a",
+              bgcolor: "#18181b",
               minHeight: 520,
-              boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
             }}
           >
             <CardContent sx={{ p: 4 }}>
@@ -241,25 +302,24 @@ function ReportsPage() {
                 component="h2"
                 sx={{
                   fontSize: 30,
-                  fontWeight: 800,
-                  color: "#18181b",
+                  fontWeight: 900,
+                  color: "#f4f4f5",
                   fontFamily: "Outfit, Poppins, sans-serif",
                   mb: 1,
                 }}
               >
-                Listings Per Category
+                Platform Activity
               </Typography>
 
               <Typography
                 sx={{
-                  color: "#52525b",
+                  color: "#a1a1aa",
                   fontSize: 14,
                   fontFamily: "Poppins, sans-serif",
                   mb: 3,
                 }}
               >
-                This chart displays the number of listings posted under each
-                item category.
+                This chart displays monthly articles, discussions, and replies.
               </Typography>
 
               <Box className="print-chart" sx={{ height: 400 }}>
@@ -269,13 +329,21 @@ function ReportsPage() {
                   xAxis={[
                     {
                       scaleType: "band",
-                      data: ["Books", "Uniforms", "Supplies", "Others"],
+                      data: monthLabels,
                     },
                   ]}
                   series={[
                     {
-                      data: [18, 26, 15, 10],
-                      label: "Listings",
+                      data: monthlyData.articleCounts,
+                      label: "Articles",
+                    },
+                    {
+                      data: monthlyData.discussionCounts,
+                      label: "Discussions",
+                    },
+                    {
+                      data: monthlyData.replyCounts,
+                      label: "Replies",
                     },
                   ]}
                 />

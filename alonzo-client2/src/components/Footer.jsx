@@ -4,14 +4,13 @@ const Footer = () => {
       <div className="mx-auto max-w-7xl flex flex-col items-center gap-6">
         
         <div className="flex flex-col items-center gap-1">
-          <span className="text-xl font-bold text-white tracking-tight">Alonzo Creatives</span>
-          <span className="text-xs text-zinc-500 uppercase tracking-[0.2em]">Web Development Blog</span>
+          <span className="text-xl font-bold text-white tracking-tight">AlonzoTech</span>
         </div>
 
         <div className="w-12 h-px bg-zinc-700" />
 
         <p className="text-xs text-zinc-500">
-          © 2026 Alonzo Creatives. All rights reserved.
+          © 2026 AlonzoTech. All rights reserved.
         </p>
 
       </div>

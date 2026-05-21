@@ -20,38 +20,54 @@ const ArticleListPage = () => {
   }, []);
 
   return (
-    <div className="flex w-full flex-col gap-6">
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-          Articles
-        </p>
+    <div className="flex w-full flex-col bg-[#111113] text-zinc-100">
+      <section className="relative overflow-hidden bg-[#151517] px-4 pt-20 pb-16 sm:px-6 sm:pt-20 sm:pb-20 lg:px-8">
+        <div className="absolute left-[-10%] top-[-20%] h-80 w-80 rounded-full bg-violet-500/10 blur-3xl" />
+        <div className="absolute bottom-[-20%] right-[-10%] h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
 
-        <h1 className="max-w-xl text-3xl font-bold leading-tight text-zinc-900 sm:text-4xl">
-          {articles.length} Web Development Articles
-        </h1>
+        <div className="relative mx-auto max-w-6xl">
+          <span className="mb-6 inline-flex rounded-full border border-violet-400/30 bg-violet-400/10 px-6 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-violet-300">
+            Articles
+          </span>
 
-        <p className="mt-4 max-w-lg text-sm leading-7 text-zinc-600 sm:text-base">
-          Browse topics like React, Tailwind CSS, JavaScript ES6, Node.js, and Git.
-          Each article includes examples and explanations to help you improve your coding skills.
-        </p>
+          <h1 className="max-w-5xl text-4xl font-black leading-tight tracking-[-0.04em] text-zinc-50 sm:text-4xl lg:text-5xl">
+            Read stories and insights
+            <span className="block bg-gradient-to-r from-violet-300 to-zinc-100 bg-clip-text text-transparent">
+            from the tech community.
+            </span>
+          </h1>
 
-        <div className="mt-6 flex gap-4">
-          <Button to="/">Back Home</Button>
+          <p className="mt-2 max-w-2xl text-base leading-8 text-zinc-400">
+              Browse user-published articles about programming, web development,
+              PC hardware, AI, software tools, and digital culture
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button to="/">Back Home</Button>
+          </div>
         </div>
       </section>
 
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="mb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-            Featured Articles
-          </p>
+      <section className="border-y border-zinc-800 bg-[#111113] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-violet-300">
+                Featured Articles
+              </p>
 
-          <h2 className="mt-2 text-2xl font-semibold text-zinc-900">
-            Latest Development Guides
-          </h2>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-zinc-100">
+                Latest posts and insights
+              </h2>
+            </div>
+
+            <div className="rounded-full border border-zinc-800 bg-[#18181b] px-5 py-2 text-sm font-medium text-zinc-400 shadow-lg shadow-black/10">
+              {articles.length} Articles Available
+            </div>
+          </div>
+
+          <ArticleList articles={articles} />
         </div>
-
-        <ArticleList articles={articles} />
       </section>
     </div>
   );
