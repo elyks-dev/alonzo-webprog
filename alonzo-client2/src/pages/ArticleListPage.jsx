@@ -2,16 +2,20 @@ import { useEffect, useState } from "react";
 import Button from "../components/Button";
 import ArticleList from "../components/ArticleList";
 import { fetchArticles } from "../services/ArticleService";
+import { SkeletonList } from "../components/skeletons";
 
 const ArticleListPage = () => {
   const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadArticles = async () => {
     try {
       const { data } = await fetchArticles();
-      setArticles(data.articles);
+      setArticles(data.articles || []);
     } catch (error) {
       console.error("Failed to fetch articles:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,11 +66,17 @@ const ArticleListPage = () => {
             </div>
 
             <div className="rounded-full border border-zinc-800 bg-[#18181b] px-5 py-2 text-sm font-medium text-zinc-400 shadow-lg shadow-black/10">
-              {articles.length} Articles Available
+              {loading ? "Loading articles..." : `${articles.length} Articles Available`}
             </div>
           </div>
 
-          <ArticleList articles={articles} />
+          {loading ? (
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <SkeletonList count={6} cardHeight={460} />
+            </div>
+          ) : (
+            <ArticleList articles={articles} />
+          )}
         </div>
       </section>
     </div>

@@ -19,6 +19,7 @@ import {
   deleteArticle,
 } from "../../services/ArticleService";
 import constants from "../../constants";
+import { SkeletonTable } from "../../components/skeletons";
 
 const emptyForm = {
   name: "",
@@ -128,6 +129,7 @@ const dataGridSx = {
 
 function DashArticleListPage() {
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
   const [open, setOpen] = useState(false);
@@ -149,6 +151,8 @@ function DashArticleListPage() {
       setRows(articlesFromDB);
     } catch (error) {
       console.error("Failed to fetch my articles:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -428,15 +432,19 @@ function DashArticleListPage() {
               width: "100%",
             }}
           >
-            <DataGrid
-              rows={filteredRows}
-              columns={columns}
-              pageSizeOptions={[5]}
-              disableColumnMenu
-              disableRowSelectionOnClick
-              hideFooter
-              sx={dataGridSx}
-            />
+            {loading ? (
+              <SkeletonTable count={7} columns={columns.length} rowHeight={52} />
+            ) : (
+              <DataGrid
+                rows={filteredRows}
+                columns={columns}
+                pageSizeOptions={[5]}
+                disableColumnMenu
+                disableRowSelectionOnClick
+                hideFooter
+                sx={dataGridSx}
+              />
+            )}
           </Box>
         </CardContent>
       </Card>

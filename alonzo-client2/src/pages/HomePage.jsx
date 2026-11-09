@@ -10,6 +10,7 @@ import {
   deleteReply,
 } from "../services/PostService";
 import constants from "../constants";
+import { SkeletonCard, SkeletonText } from "../components/skeletons";
 
 const getImageUrl = (image) => {
   if (!image) return "";
@@ -64,6 +65,8 @@ const HomePage = () => {
 
   const [articles, setArticles] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
   const [visiblePosts, setVisiblePosts] = useState(5);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -86,18 +89,22 @@ const HomePage = () => {
   const loadArticles = async () => {
     try {
       const { data } = await fetchArticles();
-      setArticles(data.articles);
+      setArticles(data.articles || []);
     } catch (error) {
       console.error("Failed to fetch articles:", error);
+    } finally {
+      setArticlesLoading(false);
     }
   };
 
   const loadPosts = async () => {
     try {
       const { data } = await fetchPosts();
-      setPosts(data.posts);
+      setPosts(data.posts || []);
     } catch (error) {
       console.error("Failed to fetch posts:", error);
+    } finally {
+      setPostsLoading(false);
     }
   };
 
@@ -329,7 +336,9 @@ const HomePage = () => {
               Latest Articles
             </p>
 
-            {featuredArticles.length > 0 && (
+            {articlesLoading ? (
+              <SkeletonCard height={460} />
+            ) : featuredArticles.length > 0 ? (
               <>
                 <div className="lg:hidden">
                   {currentArticle && renderArticleCard(currentArticle)}
@@ -393,7 +402,7 @@ const HomePage = () => {
                   </div>
                 </div>
               </>
-            )}
+            ) : null}
           </div>
         </div>
       </section>
@@ -421,7 +430,24 @@ const HomePage = () => {
           </div>
 
           <div className="grid gap-4">
-            {posts.length > 0 ? (
+            {postsLoading ? (
+              <div className="grid gap-4">
+                {Array.from({ length: 3 }, (_, index) => (
+                  <article
+                    key={index}
+                    className="rounded-[1.75rem] border border-zinc-800 bg-[#18181b] p-5"
+                  >
+                    <SkeletonText lines={2} width="35%" height={18} />
+                    <div className="mt-4">
+                      <SkeletonText lines={3} height={20} />
+                    </div>
+                    <div className="mt-5">
+                      <SkeletonText width="25%" height={18} />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : posts.length > 0 ? (
               displayedPosts.map((post) => {
                 const isPostOwner =
                   loggedInUserId && post.author?._id === loggedInUserId;

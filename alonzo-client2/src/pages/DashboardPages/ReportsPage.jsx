@@ -5,6 +5,7 @@ import { BarChart, LineChart } from "@mui/x-charts";
 import { fetchUsers } from "../../services/UserService";
 import { fetchArticles } from "../../services/ArticleService";
 import { fetchPosts } from "../../services/PostService";
+import { SkeletonChart } from "../../components/skeletons";
 
 const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -14,6 +15,7 @@ function ReportsPage() {
   const [users, setUsers] = useState([]);
   const [articles, setArticles] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadReportsData = async () => {
     try {
@@ -25,6 +27,8 @@ function ReportsPage() {
       setPosts(postsResponse.data.posts || []);
     } catch (error) {
       console.error("Failed to load reports data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -266,24 +270,18 @@ function ReportsPage() {
                 This chart shows monthly registered users from the database.
               </Typography>
 
-              <Box className="print-chart" sx={{ height: 400 }}>
-                <LineChart
-                  height={380}
-                  margin={{ top: 20, right: 30, bottom: 50, left: 55 }}
-                  xAxis={[
-                    {
-                      data: monthLabels,
-                      scaleType: "point",
-                    },
-                  ]}
-                  series={[
-                    {
-                      data: monthlyData.userCounts,
-                      label: "Users",
-                    },
-                  ]}
-                />
-              </Box>
+              {loading ? (
+                <SkeletonChart height={400} />
+              ) : (
+                <Box className="print-chart" sx={{ height: 400 }}>
+                  <LineChart
+                    height={380}
+                    margin={{ top: 20, right: 30, bottom: 50, left: 55 }}
+                    xAxis={[{ data: monthLabels, scaleType: "point" }]}
+                    series={[{ data: monthlyData.userCounts, label: "Users" }]}
+                  />
+                </Box>
+              )}
             </CardContent>
           </Card>
 
@@ -322,32 +320,22 @@ function ReportsPage() {
                 This chart displays monthly articles, discussions, and replies.
               </Typography>
 
-              <Box className="print-chart" sx={{ height: 400 }}>
-                <BarChart
-                  height={380}
-                  margin={{ top: 20, right: 30, bottom: 50, left: 55 }}
-                  xAxis={[
-                    {
-                      scaleType: "band",
-                      data: monthLabels,
-                    },
-                  ]}
-                  series={[
-                    {
-                      data: monthlyData.articleCounts,
-                      label: "Articles",
-                    },
-                    {
-                      data: monthlyData.discussionCounts,
-                      label: "Discussions",
-                    },
-                    {
-                      data: monthlyData.replyCounts,
-                      label: "Replies",
-                    },
-                  ]}
-                />
-              </Box>
+              {loading ? (
+                <SkeletonChart height={400} />
+              ) : (
+                <Box className="print-chart" sx={{ height: 400 }}>
+                  <BarChart
+                    height={380}
+                    margin={{ top: 20, right: 30, bottom: 50, left: 55 }}
+                    xAxis={[{ scaleType: "band", data: monthLabels }]}
+                    series={[
+                      { data: monthlyData.articleCounts, label: "Articles" },
+                      { data: monthlyData.discussionCounts, label: "Discussions" },
+                      { data: monthlyData.replyCounts, label: "Replies" },
+                    ]}
+                  />
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Box>

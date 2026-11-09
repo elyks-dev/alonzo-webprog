@@ -23,6 +23,7 @@ import {
   createUser,
   updateUser,
 } from "../../services/UserService";
+import { SkeletonTable } from "../../components/skeletons";
 
 const emptyForm = {
   firstName: "",
@@ -173,34 +174,8 @@ const dataGridSx = {
 function UsersPage() {
   const type = localStorage.getItem("type");
 
-  if (type === "editor") {
-    return (
-      <Box
-        sx={{
-          p: 5,
-          borderRadius: "30px",
-          bgcolor: "#18181b",
-          border: "1px solid #27272a",
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize: "2rem",
-            fontWeight: 900,
-            color: "#f87171",
-          }}
-        >
-          Access Denied
-        </Typography>
-
-        <Typography sx={{ mt: 1, color: "#a1a1aa" }}>
-          Editors are not allowed to access this page.
-        </Typography>
-      </Box>
-    );
-  }
-
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
@@ -226,6 +201,8 @@ function UsersPage() {
       setRows(usersFromDB);
     } catch (error) {
       console.error("Failed to fetch users:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -254,6 +231,33 @@ function UsersPage() {
       return matchesSearch && matchesRole && matchesGender && matchesStatus;
     });
   }, [rows, search, roleFilter, genderFilter, statusFilter]);
+
+  if (type === "editor") {
+    return (
+      <Box
+        sx={{
+          p: 5,
+          borderRadius: "30px",
+          bgcolor: "#18181b",
+          border: "1px solid #27272a",
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "2rem",
+            fontWeight: 900,
+            color: "#f87171",
+          }}
+        >
+          Access Denied
+        </Typography>
+
+        <Typography sx={{ mt: 1, color: "#a1a1aa" }}>
+          Editors are not allowed to access this page.
+        </Typography>
+      </Box>
+    );
+  }
 
   const validateForm = () => {
     const newErrors = {};
@@ -570,17 +574,21 @@ function UsersPage() {
           </Box>
 
           <Box sx={{ height: 520, width: "100%" }}>
-            <DataGrid
-              rows={filteredRows}
-              columns={columns}
-              pageSizeOptions={[5]}
-              initialState={{
-                pagination: {
-                  paginationModel: { pageSize: 5 },
-                },
-              }}
-              sx={dataGridSx}
-            />
+            {loading ? (
+              <SkeletonTable count={7} columns={columns.length} rowHeight={52} />
+            ) : (
+              <DataGrid
+                rows={filteredRows}
+                columns={columns}
+                pageSizeOptions={[5]}
+                initialState={{
+                  pagination: {
+                    paginationModel: { pageSize: 5 },
+                  },
+                }}
+                sx={dataGridSx}
+              />
+            )}
           </Box>
         </CardContent>
       </Card>

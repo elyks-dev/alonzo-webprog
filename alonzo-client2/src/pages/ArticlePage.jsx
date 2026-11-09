@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Button from "../components/Button";
 import { fetchArticles } from "../services/ArticleService";
 import constants from "../constants";
+import { SkeletonImage, SkeletonText } from "../components/skeletons";
 
 const getImageUrl = (image) => {
   if (!image) return "";
@@ -51,10 +52,28 @@ function ArticlePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#111113] px-4 text-zinc-100">
-        <div className="rounded-[1.75rem] border border-zinc-800 bg-[#18181b] px-8 py-6 shadow-xl shadow-black/20">
-          <h1 className="text-2xl font-bold">Loading article...</h1>
-        </div>
+      <div className="flex w-full flex-col bg-[#111113] text-zinc-100">
+        <section className="relative overflow-hidden bg-[#151517] px-4 pt-20 pb-12 sm:px-6 sm:pt-20 sm:pb-16 lg:px-8">
+          <div className="relative mx-auto max-w-4xl">
+            <SkeletonText width="15%" height={18} />
+            <div className="mt-4">
+              <SkeletonText lines={2} height={54} />
+            </div>
+            <div className="mt-5 flex gap-3">
+              <SkeletonText width={140} height={34} />
+              <SkeletonText width={180} height={24} />
+            </div>
+          </div>
+        </section>
+
+        <section className="border-y border-zinc-800 bg-[#111113] px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl">
+            <SkeletonImage height={504} />
+            <div className="mt-8 space-y-3">
+              <SkeletonText lines={8} height={22} />
+            </div>
+          </div>
+        </section>
       </div>
     );
   }

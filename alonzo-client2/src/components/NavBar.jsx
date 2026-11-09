@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import logo from "../assets/logo.png";
 import { fetchUsers } from "../services/UserService";
+import { SkeletonText } from "./skeletons";
 
 const links = [
   { label: "Home", to: "/" },
@@ -133,7 +134,7 @@ const NavBar = () => {
                 onClick={() => setAccountOpen(!accountOpen)}
                 className="rounded-full border border-violet-400/40 bg-violet-400/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-200 transition hover:bg-violet-400/20 hover:text-white"
               >
-                {fullName || "Account"}
+                {fullName ? fullName : <SkeletonText width={72} height={18} />}
               </button>
 
               {accountOpen && (
@@ -229,7 +230,7 @@ const NavBar = () => {
                     </p>
 
                     <p className="mt-1 text-sm font-bold text-zinc-100">
-                      {fullName || "Account"}
+                      {fullName ? fullName : <SkeletonText width={96} height={18} />}
                     </p>
                   </div>
 

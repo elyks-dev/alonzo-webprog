@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import { fetchUsers } from "../../services/UserService";
 import { fetchArticles } from "../../services/ArticleService";
 import { fetchPosts } from "../../services/PostService";
+import { SkeletonChart, SkeletonStat } from "../../components/skeletons";
 
 const monthLabels = [
   "Jan",
@@ -26,6 +27,7 @@ function DashboardPage() {
   const [users, setUsers] = useState([]);
   const [articles, setArticles] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadDashboardData = async () => {
     try {
@@ -37,6 +39,8 @@ function DashboardPage() {
       setPosts(postsResponse.data.posts || []);
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,7 +137,9 @@ function DashboardPage() {
           mb: 4,
         }}
       >
-        {stats.map((item) => (
+        {loading
+          ? stats.map((item) => <SkeletonStat key={item.label} />)
+          : stats.map((item) => (
           <Card
             key={item.label}
             sx={{
@@ -179,7 +185,7 @@ function DashboardPage() {
               </Typography>
             </CardContent>
           </Card>
-        ))}
+          ))}
       </Box>
 
       <Box
@@ -227,32 +233,27 @@ function DashboardPage() {
               discussions, and replies from the database.
             </Typography>
 
-            <Box sx={{ height: 400 }}>
-              <BarChart
-                height={380}
-                margin={{ top: 20, right: 20, bottom: 50, left: 45 }}
-                xAxis={[
-                  {
-                    scaleType: "band",
-                    data: monthLabels,
-                  },
-                ]}
-                series={[
-                  {
-                    data: monthlyData.articleCounts,
-                    label: "Articles",
-                  },
-                  {
-                    data: monthlyData.postCounts,
-                    label: "Discussions",
-                  },
-                  {
-                    data: monthlyData.replyCounts,
-                    label: "Replies",
-                  },
-                ]}
-              />
-            </Box>
+            {loading ? (
+              <SkeletonChart height={400} />
+            ) : (
+              <Box sx={{ height: 400 }}>
+                <BarChart
+                  height={380}
+                  margin={{ top: 20, right: 20, bottom: 50, left: 45 }}
+                  xAxis={[
+                    {
+                      scaleType: "band",
+                      data: monthLabels,
+                    },
+                  ]}
+                  series={[
+                    { data: monthlyData.articleCounts, label: "Articles" },
+                    { data: monthlyData.postCounts, label: "Discussions" },
+                    { data: monthlyData.replyCounts, label: "Replies" },
+                  ]}
+                />
+              </Box>
+            )}
           </CardContent>
         </Card>
 

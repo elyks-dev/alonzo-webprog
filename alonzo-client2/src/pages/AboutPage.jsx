@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import Button from "../components/Button";
 import { fetchArticles } from "../services/ArticleService";
 import { fetchPosts } from "../services/PostService";
+import { SkeletonStat } from "../components/skeletons";
 
 const AboutPage = () => {
   const [articles, setArticles] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadStats = async () => {
     try {
@@ -18,6 +20,8 @@ const AboutPage = () => {
       setPosts(postsResponse.data.posts || []);
     } catch (error) {
       console.error("Failed to load stats:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,7 +101,9 @@ const AboutPage = () => {
           </h2>
 
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat) => (
+            {loading ? stats.map((stat) => (
+              <SkeletonStat key={stat.label} height={150} />
+            )) : stats.map((stat) => (
               <div
                 key={stat.label}
                 className="rounded-[1.75rem] border border-zinc-800 bg-[#18181b] p-6 shadow-lg shadow-black/10 transition hover:-translate-y-1 hover:border-violet-400/40 hover:bg-[#1d1d22]"

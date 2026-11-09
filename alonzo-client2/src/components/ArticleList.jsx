@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Button from "./Button";
 import constants from "../constants";
+import { SkeletonImage } from "./skeletons";
 
 const getImageUrl = (image) => {
   if (!image) return "";
@@ -38,10 +39,11 @@ const ArticleList = ({ articles }) => {
           >
             <div className="overflow-hidden rounded-[1.25rem] bg-zinc-900">
               {mainImage ? (
-                <img
+                <SkeletonImage
                   src={getImageUrl(mainImage)}
                   alt={article.title}
-                  className="h-56 w-full object-cover opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
+                  height={224}
+                  className="h-56 w-full transition duration-500 group-hover:scale-105"
                 />
               ) : (
                 <div className="flex h-56 w-full items-center justify-center bg-[#111113] text-sm text-zinc-500">
